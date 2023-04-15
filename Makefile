@@ -30,20 +30,22 @@ default: run
 endif
 
 $(TARGET): $(OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	@ printf "%8s %-40s %s\n" $(CC) $@ "$(CFLAGS)"
+	@ $(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
+	@ printf "%8s %-40s %s\n" $(CC) $< "$(CFLAGS)"
+	@ $(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
 
 $(BUILD_DIR):
-	mkdir -p $(SRC_DIRS:%=$(BUILD_DIR)/%)
+	@ mkdir -p $(SRC_DIRS:%=$(BUILD_DIR)/%)
 
 
 run: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
-	rm -rf gmon.out
+	@ rm -rf $(BUILD_DIR) $(TARGET)
+	@ rm -rf gmon.out
 
-.PHONY: clean test
+.PHONY: clean test default
