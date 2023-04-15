@@ -1,38 +1,55 @@
+#include <err.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "chunk.h"
 #include "common.h"
 #include "debug.h"
+#include "file_utils.h"
 #include "vm.h"
+
+static void repl() {
+  char line[1024];
+  while (true) {
+    printf("> ");
+
+    if (!fgets(line, sizeof(line), stdin)) {
+      printf("\nByeBye 👋\n");
+      break;
+    }
+
+    interpret(line);
+  }
+}
+
+static void runFile(const char *path) {
+  char *source = readFile(path);
+  InterpretResult result = interpret(source);
+  free(source);
+
+  switch (result) {
+  case INTERPRET_COMPILE_ERROR:
+    exit(65);
+    break;
+  case INTERPRET_RUNTIME_ERROR:
+    exit(70);
+    break;
+  default:
+    break;
+  }
+}
 
 int main(int argc, char *argv[]) {
   initVM();
-  Chunk chunk;
-  initChunk(&chunk);
 
-  int constant = addConstant(&chunk, 1.2);
-  writeChunk(&chunk, OP_CONSTANT, 123);
-  writeChunk(&chunk, constant, 123);
-
-  constant = addConstant(&chunk, 3.4);
-  writeChunk(&chunk, OP_CONSTANT, 123);
-  writeChunk(&chunk, constant, 123);
-
-  writeChunk(&chunk, OP_ADD, 123);
-
-  constant = addConstant(&chunk, 5.6);
-  writeChunk(&chunk, OP_CONSTANT, 123);
-  writeChunk(&chunk, constant, 123);
-
-  writeChunk(&chunk, OP_DIVIDE, 123);
-  for (size_t i = 0; i < 10000; i++) {
-    writeChunk(&chunk, OP_NEGATE, 123);
+  if (argc == 1) {
+    repl();
+  } else if (argc == 2) {
+    runFile(argv[1]);
+  } else {
+    errx(EXIT_FAILURE, "Usage: %s [path]\n", argv[0]);
   }
 
-  writeChunk(&chunk, OP_RETURN, 123);
-  disassembleChunk(&chunk, "test chunk");
-  interpret(&chunk);
   freeVM();
-  freeChunk(&chunk);
   return EXIT_SUCCESS;
 }

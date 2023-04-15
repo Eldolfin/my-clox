@@ -3,6 +3,11 @@ SRC = criterion.c
 TARGET = criterion
 OPTFLAGS = -O3
 CFLAGS = -Wall -Wextra $(OPTFLAGS)
+CPPFLAGS = -MMD -I ../src/
+
+BUILD_DIR := ../target
+CFILES := $(shell find ../src -type f \( -iname "*.c" ! -iname "main.c" \))
+OBJS := $(CFILES:../%.c=$(BUILD_DIR)/%.o)
 
 DEBUG := 0
 
@@ -17,14 +22,18 @@ else
 default: run
 endif
 
-$(TARGET): $(SRC)
-	@ printf "%8s %-40s %s\n" $(CC) $@ "$(CFLAGS)"
-	@ $(CC) $(CPPFLAGS) $(CFLAGS) $(SRC) -o $@ $(LDLIBS)
+$(TARGET): $(OBJS) $(SRC)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@ $(LDLIBS)
+
+$(OBJS): MainBuild
+
+MainBuild: $(CFILES)
+	@ $(MAKE) -C ../ clox -s
 
 run: $(TARGET)
 	./$^
 
 clean:
-	@ rm -rf $(TARGET) sandbox-gmon* gmon.out
+	@ rm -rf $(TARGET) sandbox-gmon* gmon.out *.d
 
-.PHONY: clean default run
+.PHONY: clean default run MainBuild
