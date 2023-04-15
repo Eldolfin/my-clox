@@ -1,4 +1,5 @@
 #include <criterion/alloc.h>
+#include <criterion/internal/assert.h>
 #include <criterion/parameterized.h>
 #include <dirent.h>
 #include <err.h>
@@ -13,15 +14,53 @@
 char *read_file(char filename[]);
 char **list_files(size_t *n);
 char *cr_strdup(const char *str);
+char *extract_expected(char *source);
+
 ParameterizedTestParameters(end_to_end_suite, book_test_suite) {
-  size_t nb_params = 1;
+  size_t nb_params;
   char **params = list_files(&nb_params);
 
   return cr_make_param_array(char *, params, nb_params, NULL);
 }
 
 ParameterizedTest(char *program[], end_to_end_suite, book_test_suite) {
-  char *data = read_file(*program);
+  char *source = read_file(*program);
+  char *expected = extract_expected(source);
+  // TODO: implement run() function
+  /* cr_assert_str_eq(run(source), expected); */
+  free(source);
+  free(expected);
+}
+
+char *extract_expected(char *source) {
+  char *output_strings = malloc(strlen(source));
+  char *src_ptr = source;
+  char *dest_ptr = output_strings;
+
+  while (1) {
+    char *expect_ptr = strstr(src_ptr, "// expect: ");
+    if (expect_ptr == NULL) {
+      break;
+    }
+
+    src_ptr = expect_ptr + strlen("// expect: ");
+
+    char *line_end_ptr = strstr(src_ptr, "\n");
+
+    if (line_end_ptr == NULL) {
+      line_end_ptr = source + strlen(source);
+    }
+
+    size_t string_length = line_end_ptr - src_ptr;
+    strncpy(dest_ptr, src_ptr, string_length);
+    dest_ptr[string_length] = '\n';
+    dest_ptr += string_length + 1;
+
+    src_ptr = line_end_ptr;
+  }
+  *dest_ptr = '\0';
+
+  return output_strings;
 }
 
 char *read_file(char filename[]) {

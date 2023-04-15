@@ -2,7 +2,7 @@ TARGET = clox
 
 CC := gcc
 
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra $(OPTFLAGS)
 OPTFLAGS = -O3
 CPPFLAGS = -MMD
 LDFLAGS :=
@@ -47,5 +47,9 @@ run: $(TARGET)
 clean:
 	@ rm -rf $(BUILD_DIR) $(TARGET)
 	@ rm -rf gmon.out
+	@ $(MAKE) -C tests -s clean
 
-.PHONY: clean test default
+check:
+	@ $(MAKE) -C tests -s
+
+.PHONY: clean test default check
