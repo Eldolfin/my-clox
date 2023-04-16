@@ -1,3 +1,4 @@
+#include <bits/types/FILE.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -27,7 +28,7 @@ Value pop() {
   return *vm.stackTop;
 }
 
-static InterpretResult run() {
+static InterpretResult run(FILE *outputStream) {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define BINARY_OP(op)                                                          \
@@ -46,7 +47,7 @@ static InterpretResult run() {
     printf("          ");
     for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
       printf("[ ");
-      printValue(*slot);
+      printValue(*slot, outputStream);
       printf(" ]");
     }
     printf("\n");
@@ -71,7 +72,7 @@ static InterpretResult run() {
     case OP_DIVIDE:
       BINARY_OP_BREAK(/);
     case OP_RETURN: {
-      printValue(pop());
+      printValue(pop(), outputStream);
       printf("\n");
       return INTERPRET_OK;
     }
@@ -84,7 +85,21 @@ static InterpretResult run() {
 #undef BINARY_OP_BREAK
 }
 
-InterpretResult interpret(const char source[]) {
-  compile(source);
-  return INTERPRET_OK;
+InterpretResult interpret(const char source[], const char filename[],
+                          FILE *outputStream) {
+  Chunk chunk;
+  initChunk(&chunk);
+
+  if (!compile(source, &chunk, filename)) {
+    freeChunk(&chunk);
+    return INTERPRET_COMPILE_ERROR;
+  }
+
+  vm.chunk = &chunk;
+  vm.ip = vm.chunk->code;
+
+  InterpretResult result = run(outputStream);
+
+  freeChunk(&chunk);
+  return result;
 }

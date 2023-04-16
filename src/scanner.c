@@ -15,11 +15,12 @@ typedef struct {
 
 Scanner scanner;
 
-void initScanner(const char source[]) {
+void initScanner(const char source[], const char filename[]) {
   scanner.start = source;
   scanner.current = source;
   scanner.position.line = 1;
   scanner.position.column = 1;
+  scanner.position.filename = filename;
   initRegexes();
 }
 

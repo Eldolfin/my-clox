@@ -32,6 +32,7 @@ typedef enum {
 typedef struct {
   int line;
   int column;
+  char *filename;
 } Position;
 
 typedef struct {
@@ -41,5 +42,5 @@ typedef struct {
   Position position;
 } Token;
 
-void initScanner(const char source[]);
+void initScanner(const char source[], const char filename[]);
 Token scanToken();

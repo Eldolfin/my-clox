@@ -1,7 +1,5 @@
-#include <stdio.h>
-
-#include "memory.h"
 #include "value.h"
+#include "memory.h"
 
 void initValueArray(ValueArray *array) {
   array->values = NULL;
@@ -25,4 +23,4 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
-void printValue(Value value) { printf("%g", value); }
+void printValue(Value value, FILE *stream) { fprintf(stream, "%g", value); }

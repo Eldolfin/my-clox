@@ -1,3 +1,4 @@
+#include <bits/types/FILE.h>
 #include <dirent.h>
 #include <err.h>
 #include <ftw.h>
@@ -9,6 +10,7 @@
 #include <unistd.h>
 
 #include "file_utils.h"
+#include "vm.h"
 
 char **list_files(size_t *n);
 char *cr_strdup(const char *str);
@@ -21,11 +23,19 @@ ParameterizedTestParameters(end_to_end_suite, book_test_suite) {
   return cr_make_param_array(char *, params, nb_params, NULL);
 }
 
+char *run(char *source) {
+  const size_t MAX_OUTPUT_SIZE = 2048;
+  char *output = malloc(sizeof(char) * MAX_OUTPUT_SIZE);
+  FILE *f = fmemopen(output, MAX_OUTPUT_SIZE, "w");
+  interpret(f, "", output);
+  fclose(f);
+  return output;
+}
+
 ParameterizedTest(char *program[], end_to_end_suite, book_test_suite) {
   char *source = readFile(*program);
   char *expected = extract_expected(source);
-  // TODO: implement run() function
-  /* cr_assert_str_eq(run(source), expected); */
+  cr_assert_str_eq(run(source), expected);
   free(source);
   free(expected);
 }

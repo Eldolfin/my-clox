@@ -1,3 +1,4 @@
 #pragma once
+#include "vm.h"
 
-void compile(const char source[]);
+bool compile(const char source[], Chunk *chunk, const char filename[]);

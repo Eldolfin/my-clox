@@ -104,7 +104,7 @@ ParameterizedTestParameters(scanner_tests, test_token_types) {
 
 ParameterizedTest(struct source_to_token_types_params *params, scanner_tests,
                   test_token_types) {
-  initScanner(params->source);
+  initScanner(params->source, "");
   TokenType type = scanToken().type;
   size_t i = 0;
   do {
@@ -120,7 +120,7 @@ ParameterizedTest(struct source_to_token_types_params *params, scanner_tests,
 
 char *token_name(TokenType type) {
   switch (type) {
-  // clang-format off
+    // clang-format off
     case TOKEN_LEFT_PAREN: return "TOKEN_LEFT_PAREN";
     case TOKEN_RIGHT_PAREN: return "TOKEN_RIGHT_PAREN";
     case TOKEN_LEFT_BRACE: return "TOKEN_LEFT_BRACE";
