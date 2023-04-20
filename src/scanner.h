@@ -32,7 +32,7 @@ typedef enum {
 typedef struct {
   int line;
   int column;
-  char *filename;
+  const char *filename;
 } Position;
 
 typedef struct {

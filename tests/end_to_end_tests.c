@@ -35,7 +35,11 @@ char *run(char *source) {
 ParameterizedTest(char *program[], end_to_end_suite, book_test_suite) {
   char *source = readFile(*program);
   char *expected = extract_expected(source);
-  cr_assert_str_eq(run(source), expected);
+  char *result = run(source);
+  cr_assert_str_eq(result, expected,
+                   "For test %s:\nexpected output:\n%s\nBut got:\n%s\n",
+                   *program, expected, result);
+  cr_log_info("Success for file %s\n", *program);
   free(source);
   free(expected);
 }
@@ -74,7 +78,8 @@ char *extract_expected(char *source) {
 // searches for .lox files
 char **list_files(size_t *n) {
   glob_t results;
-  int ret = glob("./*/*.lox", GLOB_TILDE | GLOB_BRACE, NULL, &results);
+  int ret =
+      glob("./book_tests/*/*.lox", GLOB_TILDE | GLOB_BRACE, NULL, &results);
   if (ret != 0) {
     errx(EXIT_FAILURE, "Error: glob() failed with return code %d\n", ret);
   }
