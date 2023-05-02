@@ -59,9 +59,25 @@ static Token errorToken(const char message[]) {
   return token;
 }
 
+static char peek() { return *scanner.current; }
+
+static char peekNext() {
+  if (isAtEnd())
+    return '\0';
+
+  return scanner.current[1];
+}
+
 static void skipWhitespace() {
-  while (isspace(*scanner.current)) {
-    advance();
+  while (true) {
+    if (isspace(*scanner.current)) {
+      advance();
+    } else if (peek() == '/' && peekNext() == '/') {
+      while (peek() != '\n' && !isAtEnd())
+        advance();
+    } else {
+      break;
+    }
   }
 }
 

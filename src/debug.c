@@ -29,6 +29,9 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 #define CASE_SIMPLE_INTRUCTION(instruction)                                    \
   case instruction:                                                            \
     return simpleInstruction(#instruction, offset)
+#define CASE_CONSTANT_INSTRUCTION(instruction)                                 \
+  case instruction:                                                            \
+    return constantInstruction(#instruction, chunk, offset);
 
   printf("%04d ", offset);
   if (offset > 0 &&
@@ -40,11 +43,14 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 
   uint8_t instruction = chunk->code[offset];
   switch (instruction) {
-  case OP_CONSTANT:
-    return constantInstruction("OP_CONSTANT", chunk, offset);
+    CASE_CONSTANT_INSTRUCTION(OP_CONSTANT);
+    CASE_CONSTANT_INSTRUCTION(OP_GET_GLOBAL);
+    CASE_CONSTANT_INSTRUCTION(OP_DEFINE_GLOBAL);
+    CASE_CONSTANT_INSTRUCTION(OP_SET_GLOBAL);
     CASE_SIMPLE_INTRUCTION(OP_NIL);
     CASE_SIMPLE_INTRUCTION(OP_TRUE);
     CASE_SIMPLE_INTRUCTION(OP_FALSE);
+    CASE_SIMPLE_INTRUCTION(OP_POP);
     CASE_SIMPLE_INTRUCTION(OP_EQUAL);
     CASE_SIMPLE_INTRUCTION(OP_GREATER);
     CASE_SIMPLE_INTRUCTION(OP_LESS);
@@ -54,6 +60,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     CASE_SIMPLE_INTRUCTION(OP_DIVIDE);
     CASE_SIMPLE_INTRUCTION(OP_NOT);
     CASE_SIMPLE_INTRUCTION(OP_NEGATE);
+    CASE_SIMPLE_INTRUCTION(OP_PRINT);
     CASE_SIMPLE_INTRUCTION(OP_RETURN);
   default:
     printf("Unknown opcode %d\n", instruction);

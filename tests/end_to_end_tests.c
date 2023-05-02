@@ -27,7 +27,7 @@ char *run(char *source) {
   const size_t MAX_OUTPUT_SIZE = 2048;
   char *output = malloc(sizeof(char) * MAX_OUTPUT_SIZE);
   FILE *f = fmemopen(output, MAX_OUTPUT_SIZE, "w");
-  interpret(f, "", output);
+  interpret(source, "", f);
   fclose(f);
   return output;
 }
