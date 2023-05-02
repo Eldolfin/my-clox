@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 
 #include "chunk.h"
@@ -25,6 +26,12 @@ static int simpleInstruction(const char *name, int offset) {
   return offset + 1;
 }
 
+static int byteInstruction(const char *name, Chunk *chunk, int offset) {
+  uint8_t slot = chunk->code[offset + 1];
+  printf("%-16s %4d\n", name, slot);
+  return offset + 2;
+}
+
 int disassembleInstruction(Chunk *chunk, int offset) {
 #define CASE_SIMPLE_INTRUCTION(instruction)                                    \
   case instruction:                                                            \
@@ -32,6 +39,9 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 #define CASE_CONSTANT_INSTRUCTION(instruction)                                 \
   case instruction:                                                            \
     return constantInstruction(#instruction, chunk, offset);
+#define CASE_BYTE_INSTRUCTION(instruction)                                     \
+  case instruction:                                                            \
+    return byteInstruction(#instruction, chunk, offset);
 
   printf("%04d ", offset);
   if (offset > 0 &&
@@ -44,9 +54,11 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   uint8_t instruction = chunk->code[offset];
   switch (instruction) {
     CASE_CONSTANT_INSTRUCTION(OP_CONSTANT);
-    CASE_CONSTANT_INSTRUCTION(OP_GET_GLOBAL);
     CASE_CONSTANT_INSTRUCTION(OP_DEFINE_GLOBAL);
+    CASE_CONSTANT_INSTRUCTION(OP_GET_GLOBAL);
     CASE_CONSTANT_INSTRUCTION(OP_SET_GLOBAL);
+    CASE_BYTE_INSTRUCTION(OP_GET_LOCAL);
+    CASE_BYTE_INSTRUCTION(OP_SET_LOCAL);
     CASE_SIMPLE_INTRUCTION(OP_NIL);
     CASE_SIMPLE_INTRUCTION(OP_TRUE);
     CASE_SIMPLE_INTRUCTION(OP_FALSE);
@@ -68,4 +80,6 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   }
 
 #undef CASE_SIMPLE_INTRUCTION
+#undef CASE_CONSTANT_INSTRUCTION
+#undef CASE_BYTE_INSTRUCTION
 }
