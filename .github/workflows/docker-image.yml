@@ -19,19 +19,23 @@ jobs:
         name: Restore Docker Image
         uses: actions/cache/restore@v3
         with:
-          key: ${{ runner.os }}-${{ hashFiles('/clox/Dockerfile') }}
-          path: /var/lib/docker/
+          key: ${{ runner.os }}-${{ hashFiles('Dockerfile') }}
+          path: ci/cache/docker/clox
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-docker-restore.outputs.cache-hit != 'true' }}
         name: Build the Docker image
-        run: docker build . --file Dockerfile --tag clox
+        run: docker build . --file Dockerfile --tag clox && \ mkdir -p ci/cache/docker/clox && \ docker image save clox --output ./ci/cache/docker/clox/clox.tar
+
+      - if: ${{ steps.cache-docker-restore.outputs.cache-hit == 'true' }}
+        name: Use cached Docker image
+        run: docker image load --input ./ci/cache/docker/clox/clox.tar
 
       - id: cache-docker-save
         name: Save Docker Image
         uses: actions/cache/save@v3
         with:
           key: ${{ steps.cache-docker-restore.outputs.cache-primary-key }}
-          path: /var/lib/docker/
+          path: ci/cache/docker/clox
 
       - name: Run tests in docker
         run: docker run --name=clox --mount type=bind,source=${PWD},target=/clox clox
