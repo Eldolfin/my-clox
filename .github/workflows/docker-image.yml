@@ -1,10 +1,13 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+permissions:
+  checks: write
 
 jobs:
   build:
@@ -15,8 +18,8 @@ jobs:
         run: docker build . --file Dockerfile --tag clox
       - name: Run tests in docker
         run: docker run --name=clox --mount type=bind,source=${PWD},target=/clox clox
-      - name: Test Report
+      - if: success() || failure()
+        name: Test Report
         uses: mikepenz/action-junit-report@v3.7.6
-        if: success() || failure()
         with:
           report_paths: 'target/test_results.xml'
