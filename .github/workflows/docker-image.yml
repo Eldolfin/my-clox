@@ -24,7 +24,7 @@ jobs:
 
       - if: ${{ steps.cache-docker-restore.outputs.cache-hit != 'true' }}
         name: Build the Docker image
-        run: docker build . --file Dockerfile --tag clox && \ mkdir -p ci/cache/docker/clox && \ docker image save clox --output ./ci/cache/docker/clox/clox.tar
+        run: docker build . --file Dockerfile --tag clox && mkdir -p ci/cache/docker/clox && docker image save clox --output ./ci/cache/docker/clox/clox.tar
 
       - if: ${{ steps.cache-docker-restore.outputs.cache-hit == 'true' }}
         name: Use cached Docker image
