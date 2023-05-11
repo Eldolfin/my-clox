@@ -7,14 +7,18 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag clox
       - name: Run tests in docker
         run: docker run --name=clox --mount type=bind,source=${PWD},target=/clox clox
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Tests
+          path: target/test_results.xml
+          reporter: jest-junit
