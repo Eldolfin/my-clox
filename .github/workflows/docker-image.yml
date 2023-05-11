@@ -15,25 +15,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache Docker image
-        id: cache-docker
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-docker-image
+      - id: cache
+        uses: actions/cache/restore@v3
         with:
+          key: ${{ runner.os }}-${{ hashFiles('/clox/Dockerfile') }}
           path: /var/lib/docker/
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/clox/Dockerfile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/clox/Dockerfile') }}
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: Build the Docker image
         run: docker build . --file Dockerfile --tag clox
 
+      - id: cache
+        uses: actions/cache/save@v3
+        with:
+          key: ${{ runner.os }}-${{ hashFiles('/clox/Dockerfile') }}
+          path: /var/lib/docker/
+
       - name: Run tests in docker
         run: docker run --name=clox --mount type=bind,source=${PWD},target=/clox clox
 
-      - if: success() || failure()
+      - if: always()
         name: Test Report
         uses: mikepenz/action-junit-report@v3.7.6
         with:
