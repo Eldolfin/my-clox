@@ -16,9 +16,7 @@ jobs:
       - name: Run tests in docker
         run: docker run --name=clox --mount type=bind,source=${PWD},target=/clox clox
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: mikepenz/action-junit-report@v3.7.6
         if: success() || failure()
         with:
-          name: Tests
-          path: target/test_results.xml
-          reporter: jest-junit
+          report_paths: 'target/test_results.xml'
