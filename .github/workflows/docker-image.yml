@@ -29,7 +29,7 @@ jobs:
             ${{ runner.os }}-
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-      - name: Build the Docker image
+        name: Build the Docker image
         run: docker build . --file Dockerfile --tag clox
 
       - name: Run tests in docker
