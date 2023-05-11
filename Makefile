@@ -23,10 +23,10 @@ ifneq ($(DEBUG), 0)
 	CFLAGS += -g -pg -fsanitize=address,undefined
 	LDFLAGS += -fsanitize=address,undefined
 	CPPFLAGS += -DDEBUG # define DEBUG like `#define DEBUG` in all C files
-default: clean run
+default: clean docker
 else
 	CPPFLAGS += -DNDEBUG
-default: run
+default: docker
 endif
 
 $(TARGET): $(OBJS)
@@ -49,7 +49,15 @@ clean:
 	@ rm -rf gmon.out
 	@ $(MAKE) -C tests -s clean
 
-check:
-	@ $(MAKE) -C tests -s
+check: $(TARGET)
+	@ # @ $(MAKE) -C tests -s
+	@ python3.10 tests/tests.py
+
+docker:
+	docker build -t clox . 
+	docker run -it --rm --name=clox --mount type=bind,source=${PWD},target=/clox clox || true
+	# generate html test report
+	./venv/bin/junit2html target/test_results.xml target/test_results.html
+
 
 .PHONY: clean test default check

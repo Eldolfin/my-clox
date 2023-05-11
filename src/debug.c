@@ -32,6 +32,15 @@ static int byteInstruction(const char *name, Chunk *chunk, int offset) {
   return offset + 2;
 }
 
+static int jumpInstruction(const char name[], int sign, Chunk *chunk,
+                           int offset) {
+  uint16_t jump =
+      (uint16_t)(chunk->code[offset + 1] << 8) | chunk->code[offset + 2];
+
+  printf("%16s %4d -> %d\n", name, offset, offset + 3 + sign * jump);
+  return offset + 3;
+}
+
 int disassembleInstruction(Chunk *chunk, int offset) {
 #define CASE_SIMPLE_INTRUCTION(instruction)                                    \
   case instruction:                                                            \
@@ -74,6 +83,13 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     CASE_SIMPLE_INTRUCTION(OP_NEGATE);
     CASE_SIMPLE_INTRUCTION(OP_PRINT);
     CASE_SIMPLE_INTRUCTION(OP_RETURN);
+  case OP_LOOP:
+    return jumpInstruction("OP_LOOP", -1, chunk, offset);
+  case OP_JUMP:
+    return jumpInstruction("OP_JUMP", 1, chunk, offset);
+  case OP_JUMP_IF_FALSE:
+    return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
+
   default:
     printf("Unknown opcode %d\n", instruction);
     return offset + 1;

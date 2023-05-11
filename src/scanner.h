@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 // clang-format off
 typedef enum {
   // Single-character tokens.
@@ -42,5 +44,5 @@ typedef struct {
   Position position;
 } Token;
 
-void initScanner(const char source[], const char filename[]);
+void initScanner(const char source[], const char filename[], bool repl_mode);
 Token scanToken();

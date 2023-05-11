@@ -11,16 +11,18 @@ typedef struct {
   const char *start;
   const char *current;
   Position position;
+  bool repl_mode;
 } Scanner;
 
 Scanner scanner;
 
-void initScanner(const char source[], const char filename[]) {
+void initScanner(const char source[], const char filename[], bool repl_mode) {
   scanner.start = source;
   scanner.current = source;
   scanner.position.line = 1;
   scanner.position.column = 1;
   scanner.position.filename = filename;
+  scanner.repl_mode = repl_mode;
   initRegexes();
 }
 
@@ -84,8 +86,14 @@ static void skipWhitespace() {
 Token scanToken() {
   skipWhitespace();
   scanner.start = scanner.current;
-  if (isAtEnd())
-    return makeToken(TOKEN_EOF);
+  if (isAtEnd()) {
+    if (scanner.repl_mode) {
+      scanner.repl_mode = false;
+      return makeToken(TOKEN_SEMICOLON);
+    } else {
+      return makeToken(TOKEN_EOF);
+    }
+  }
 
   Token matched = matchRegexes(scanner.current);
 

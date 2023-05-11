@@ -34,6 +34,6 @@ run: $(TARGET)
 	./$^
 
 clean:
-	@ rm -rf $(TARGET) sandbox-gmon* gmon.out *.d
+	@ rm -rf $(TARGET) sandbox-gmon* gmon.out *.d __pycache__
 
 .PHONY: clean default run MainBuild

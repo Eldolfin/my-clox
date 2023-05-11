@@ -1,3 +1,4 @@
 target/
 clox
 tests/criterion
+venv/

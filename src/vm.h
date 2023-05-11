@@ -14,6 +14,7 @@ typedef struct {
   Table globals;
   Table strings;
   Obj *objects;
+  bool repl_mode;
 } VM;
 
 typedef enum {
@@ -24,7 +25,7 @@ typedef enum {
 
 extern VM vm;
 
-void initVM();
+void initVM(bool repl_mode);
 void freeVM();
 InterpretResult interpret(const char source[], const char filename[],
                           FILE *outputStream);
