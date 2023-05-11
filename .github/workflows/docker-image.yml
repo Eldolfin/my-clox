@@ -15,7 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - id: cache
+      - id: cache-docker-restore
+        name: Restore Docker Image
         uses: actions/cache/restore@v3
         with:
           key: ${{ runner.os }}-${{ hashFiles('/clox/Dockerfile') }}
@@ -25,10 +26,11 @@ jobs:
         name: Build the Docker image
         run: docker build . --file Dockerfile --tag clox
 
-      - id: cache
+      - id: cache-docker-save
+        name: Save Docker Image
         uses: actions/cache/save@v3
         with:
-          key: ${{ runner.os }}-${{ hashFiles('/clox/Dockerfile') }}
+          key: ${{ steps.cache-docker-restore.outputs.cache-primary-key }}
           path: /var/lib/docker/
 
       - name: Run tests in docker
