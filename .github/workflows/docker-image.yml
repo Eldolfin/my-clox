@@ -24,9 +24,7 @@ jobs:
           path: /var/lib/docker/
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/clox/Dockerfile') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/clox/Dockerfile') }}
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: Build the Docker image
