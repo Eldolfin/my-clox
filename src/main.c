@@ -18,13 +18,13 @@ static void repl() {
       break;
     }
 
-    interpret(line, "repl", stdout);
+    interpret(line, "repl");
   }
 }
 
 static void runFile(const char path[]) {
   char *source = readFile(path);
-  InterpretResult result = interpret(source, path, stdout);
+  InterpretResult result = interpret(source, path);
   free(source);
 
   switch (result) {

@@ -1,5 +1,6 @@
 #pragma once
+#include "object.h"
 #include "vm.h"
 
-bool compile(const char source[], Chunk *chunk, const char filename[],
-             bool repl_mode);
+ObjFunction *compile(const char source[], const char filename[],
+                     bool repl_mode);

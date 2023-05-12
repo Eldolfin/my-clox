@@ -28,19 +28,19 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
-void printValue(Value value, FILE *stream) {
+void printValue(Value value) {
   switch (value.type) {
   case VAL_BOOL:
-    fprintf(stream, AS_BOOL(value) ? "true" : "false");
+    printf(AS_BOOL(value) ? "true" : "false");
     break;
   case VAL_NIL:
-    fprintf(stream, "nil");
+    printf("nil");
     break;
   case VAL_NUMBER:
-    fprintf(stream, "%g", AS_NUMBER(value));
+    printf("%g", AS_NUMBER(value));
     break;
   case VAL_OBJ:
-    printObject(value, stream);
+    printObject(value);
     break;
   }
 }

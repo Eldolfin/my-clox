@@ -16,7 +16,7 @@ void disassembleChunk(Chunk *chunk, const char *name) {
 static int constantInstruction(const char *name, Chunk *chunk, int offset) {
   uint8_t constant = chunk->code[offset + 1];
   printf("%-16s %4d '", name, constant);
-  printValue(chunk->constants.values[constant], stdout);
+  printValue(chunk->constants.values[constant]);
   printf("'\n");
   return offset + 2;
 }
@@ -68,6 +68,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     CASE_CONSTANT_INSTRUCTION(OP_SET_GLOBAL);
     CASE_BYTE_INSTRUCTION(OP_GET_LOCAL);
     CASE_BYTE_INSTRUCTION(OP_SET_LOCAL);
+    CASE_BYTE_INSTRUCTION(OP_CALL);
     CASE_SIMPLE_INTRUCTION(OP_NIL);
     CASE_SIMPLE_INTRUCTION(OP_TRUE);
     CASE_SIMPLE_INTRUCTION(OP_FALSE);
