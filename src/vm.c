@@ -5,13 +5,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
 #include "chunk.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
 #include "memory.h"
+#include "native_functions.h"
 #include "object.h"
 #include "scanner.h"
 #include "table.h"
@@ -19,10 +19,6 @@
 #include "vm.h"
 
 VM vm;
-
-static Value clockNative(int argCount, Value *args) {
-  return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
-}
 
 static void resetStack() { vm.stackTop = vm.stack; }
 
@@ -48,7 +44,7 @@ static void runtimeError(const char format[], ...) {
   resetStack();
 }
 
-static void defineNative(const char *name, NativeFn function) {
+void defineNative(const char *name, NativeFn function) {
   push(OBJ_VAL(copyString(name, (int)strlen(name))));
   push(OBJ_VAL(newNative(function)));
   tableSet(&vm.globals, AS_STRING(vm.stack[0]), vm.stack[1]);
@@ -63,7 +59,7 @@ void initVM(bool repl_mode) {
   initTable(&vm.globals);
   initTable(&vm.strings);
 
-  defineNative("clock", clockNative);
+  defineNatives();
 }
 
 void freeVM() {

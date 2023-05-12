@@ -40,3 +40,5 @@ void freeVM();
 InterpretResult interpret(const char source[], const char filename[]);
 void push(Value value);
 Value pop();
+
+void defineNative(const char *name, NativeFn function);
