@@ -26,7 +26,7 @@ ifneq ($(DEBUG), 0)
 default: clean docker
 else
 	CPPFLAGS += -DNDEBUG
-default: docker
+default: docker-run
 endif
 
 $(TARGET): $(OBJS)
@@ -58,6 +58,10 @@ docker:
 	docker run -it --rm --name=clox --mount type=bind,source=${PWD},target=/clox clox || true
 	# generate html test report
 	./venv/bin/junit2html target/test_results.xml target/test_results.html
+
+docker-run:
+	docker build -t clox . 
+	docker run -it --rm --name=clox --mount type=bind,source=${PWD},target=/clox clox make -C /clox run
 
 
 .PHONY: clean test default check
