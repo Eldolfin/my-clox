@@ -26,7 +26,12 @@ def test_generator(case: Path):
     def test(self):
         expected: str = extract_expected(case)
         result = sp.run([CLOX_EXE, str(case)], capture_output=True, shell=False, text=True, timeout=1)
-        self.assertEqual(expected, result.stdout)
+        self.assertEqual(expected, result.stdout, 
+                         f"""
+                         Expected to get:
+                         {expected}
+                         but got:
+                         {result.stdout}""")
 
     return test
 

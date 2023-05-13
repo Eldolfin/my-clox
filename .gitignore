@@ -1,4 +1,5 @@
 target/
 clox
+clox.debug
 tests/criterion
 venv/

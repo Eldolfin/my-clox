@@ -26,7 +26,7 @@ static Obj *allocateObject(size_t size, ObjType type) {
 }
 
 ObjClosure *newClosure(ObjFunction *function) {
-  ObjUpvalue **upvalues = ALLOCATE_OBJ(ObjUpvalue *, function->upvalueCount);
+  ObjUpvalue **upvalues = ALLOCATE(ObjUpvalue *, function->upvalueCount);
   for (int i = 0; i < function->upvalueCount; i++) {
     upvalues[i] = NULL;
   }
