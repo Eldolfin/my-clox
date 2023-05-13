@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h>
+
 #include "chunk.h"
 #include "common.h"
 #include "object.h"
@@ -24,8 +26,14 @@ typedef struct {
   Table globals;
   Table strings;
   ObjUpvalue *openUpvalues;
+
+  size_t bytesAllocated;
+  size_t nextGC;
   Obj *objects;
   bool repl_mode;
+  int grayCount;
+  int grayCapacity;
+  Obj **grayStack;
 } VM;
 
 typedef enum {

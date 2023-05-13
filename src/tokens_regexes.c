@@ -88,7 +88,7 @@ void initRegexes() {
     case TOKEN_NIL: R("nil")
     case TOKEN_OR: R("or")
     case TOKEN_PRINT: R("print")
-    case TOKEN_RETURN: R("return")
+    case TOKEN_RETURN: R("return([; ])")
     case TOKEN_SUPER: R("super")
     case TOKEN_THIS: R("this")
     case TOKEN_TRUE: R("true")

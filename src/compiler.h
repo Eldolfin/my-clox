@@ -4,3 +4,4 @@
 
 ObjFunction *compile(const char source[], const char filename[],
                      bool repl_mode);
+void markCompilerRoots();
