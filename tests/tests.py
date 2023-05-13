@@ -17,9 +17,9 @@ def main() -> None:
     test_cases = TEST_DIR.glob('book_tests/*/*.lox')
     case: Path
     for case in test_cases:
-        test_name: str = f'{case.parent.stem}.{case.stem}'
+        test_name: str = f'test__{case.parent.stem}__{case.stem}'
         test = test_generator(case)
-        setattr(BookTests, f'test_case_{case.stem}', test)
+        setattr(BookTests, test_name, test)
 
 
 def test_generator(case: Path):
