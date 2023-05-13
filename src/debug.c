@@ -3,6 +3,7 @@
 
 #include "chunk.h"
 #include "debug.h"
+#include "object.h"
 #include "value.h"
 
 void disassembleChunk(Chunk *chunk, const char *name) {
@@ -66,6 +67,8 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     CASE_CONSTANT_INSTRUCTION(OP_DEFINE_GLOBAL);
     CASE_CONSTANT_INSTRUCTION(OP_GET_GLOBAL);
     CASE_CONSTANT_INSTRUCTION(OP_SET_GLOBAL);
+    CASE_BYTE_INSTRUCTION(OP_GET_UPVALUE);
+    CASE_BYTE_INSTRUCTION(OP_SET_UPVALUE);
     CASE_BYTE_INSTRUCTION(OP_GET_LOCAL);
     CASE_BYTE_INSTRUCTION(OP_SET_LOCAL);
     CASE_BYTE_INSTRUCTION(OP_CALL);
@@ -84,17 +87,36 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     CASE_SIMPLE_INTRUCTION(OP_NEGATE);
     CASE_SIMPLE_INTRUCTION(OP_PRINT);
     CASE_SIMPLE_INTRUCTION(OP_RETURN);
+    CASE_SIMPLE_INTRUCTION(OP_CLOSE_UPVALUE);
   case OP_LOOP:
     return jumpInstruction("OP_LOOP", -1, chunk, offset);
   case OP_JUMP:
     return jumpInstruction("OP_JUMP", 1, chunk, offset);
   case OP_JUMP_IF_FALSE:
     return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
+  case OP_CLOSURE: {
+    offset++;
+    uint8_t constant = chunk->code[offset++];
+    printf("%-16s %4d ", "OP_CLOSURE", constant);
+    printValue(chunk->constants.values[constant]);
+    printf("\n");
 
-  default:
-    printf("Unknown opcode %d\n", instruction);
-    return offset + 1;
+    ObjFunction *function = AS_FUNCTION(chunk->constants.values[constant]);
+    for (int j = 0; j < function->upvalueCount; j++) {
+      int isLocal = chunk->code[offset++];
+      int index = chunk->code[offset++];
+      printf("%04d      |                     %s %d\n", offset - 2,
+             isLocal ? "local" : "upvalue", index);
+    }
+    return offset;
   }
+
+    /* default: */
+    /*   printf("Unknown opcode %d\n", instruction); */
+    /*   return offset + 1; */
+  }
+
+  return offset + 1;
 
 #undef CASE_SIMPLE_INTRUCTION
 #undef CASE_CONSTANT_INSTRUCTION
