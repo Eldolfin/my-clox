@@ -24,7 +24,8 @@ Token matchRegexes(const char source[]) {
         continue;
       }
       int lenght = pmatch->rm_eo - pmatch->rm_so;
-      if (lenght > token.lenght || token.type == TOKEN_IDENTIFIER) {
+      if (lenght > token.lenght ||
+          token.type == TOKEN_IDENTIFIER && lenght == token.lenght) {
         token.lenght = lenght;
         token.type = type;
       }
@@ -39,7 +40,7 @@ Token matchRegexes(const char source[]) {
 }
 
 static void build_regex(TokenType tokentype, const char regex[]) {
-  const int regex_flags = REG_NEWLINE | REG_EXTENDED;
+  const int regex_flags = REG_EXTENDED;
   if (regcomp(&regexes[tokentype], regex, regex_flags)) {
     errx(EXIT_FAILURE, "Failed to compile regex \"%s\" for TokenType(%i)",
          regex, tokentype);
@@ -88,7 +89,7 @@ void initRegexes() {
     case TOKEN_NIL: R("nil")
     case TOKEN_OR: R("or")
     case TOKEN_PRINT: R("print")
-    case TOKEN_RETURN: R("return([; ])")
+    case TOKEN_RETURN: R("return")
     case TOKEN_SUPER: R("super")
     case TOKEN_THIS: R("this")
     case TOKEN_TRUE: R("true")
