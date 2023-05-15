@@ -22,10 +22,10 @@ ifneq ($(DEBUG), 0)
 	CPPFLAGS += -DDEBUG # define DEBUG like `#define DEBUG` in all C files
 	TARGET = clox.debug
 	BUILD_DIR = ./target/debug
-default: clean docker-check
+default: clean check
 else
 	CPPFLAGS += -DNDEBUG
-default: docker-check
+default: check
 endif
 
 CFILES := $(shell find ./src -type f \( -iname "*.c" \))
@@ -54,7 +54,7 @@ clean:
 
 check: $(TARGET)
 	@ # @ $(MAKE) -C tests -s
-	@ python3.10 tests/tests.py
+	@ python3 tests/tests.py $(TARGET)
 
 docker-build:
 	# build image
@@ -69,11 +69,13 @@ docker-build:
 		make -C /clox DEBUG=$(DEBUG) $(TARGET)
 
 docker-check: docker-build
-	docker run -it --rm --name=clox --mount type=bind,source=${PWD},target=/clox clox
+	docker run -it --rm --name=clox --mount type=bind,source=${PWD},target=/clox clox \
+		/venv/bin/python3 /clox/tests/tests.py $(TARGET)
 	# generate html test report
 	./venv/bin/junit2html target/test_results.xml target/test_results.html
 
 docker-run: docker-build
-	docker run -it --rm --name=clox --mount type=bind,source=${PWD},target=/clox clox /clox/$(TARGET)
+	docker run -it --rm --name=clox --mount type=bind,source=${PWD},target=/clox clox \
+		make -C /clox run DEBUG=$(DEBUG)
 
 .PHONY: clean test default check docker-check docker-run docker-build

@@ -1,14 +1,15 @@
 import unittest
-import glob
-import os
 from pathlib import Path
 import subprocess as sp
 import xmlrunner
+from sys import argv
 
 TEST_DIR = Path(__file__).parent
 CLOX_DIR = TEST_DIR.parent
-CLOX_EXE = next(CLOX_DIR.glob('clox'))
 TARGET_DIR = CLOX_DIR.joinpath('target')
+
+CLOX_EXE = str(argv[1] if len(argv) > 1 else "clox")
+CLOX_EXE = next(CLOX_DIR.glob(CLOX_EXE))
 
 class BookTests(unittest.TestCase):
     pass
