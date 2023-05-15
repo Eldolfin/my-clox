@@ -80,6 +80,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     CASE_CONSTANT_INSTRUCTION(OP_GET_PROPERTY);
     CASE_CONSTANT_INSTRUCTION(OP_SET_PROPERTY);
     CASE_CONSTANT_INSTRUCTION(OP_METHOD);
+    CASE_CONSTANT_INSTRUCTION(OP_GET_SUPER);
     CASE_BYTE_INSTRUCTION(OP_GET_UPVALUE);
     CASE_BYTE_INSTRUCTION(OP_SET_UPVALUE);
     CASE_BYTE_INSTRUCTION(OP_GET_LOCAL);
@@ -101,6 +102,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     CASE_SIMPLE_INTRUCTION(OP_PRINT);
     CASE_SIMPLE_INTRUCTION(OP_RETURN);
     CASE_SIMPLE_INTRUCTION(OP_CLOSE_UPVALUE);
+    CASE_SIMPLE_INTRUCTION(OP_INHERIT);
   case OP_LOOP:
     return jumpInstruction("OP_LOOP", -1, chunk, offset);
   case OP_JUMP:
@@ -109,6 +111,8 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
   case OP_INVOKE:
     return invokeInstruction("OP_INVOKE", chunk, offset);
+  case OP_SUPER_INVOKE:
+    return invokeInstruction("OP_SUPER_INVOKE", chunk, offset);
   case OP_CLOSURE: {
     offset++;
     uint8_t constant = chunk->code[offset++];
